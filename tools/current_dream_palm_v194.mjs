@@ -1,0 +1,17 @@
+export const palmCards = [{"alias": "D1940", "config": {"id": 10010079, "name": "梦•劈山掌", "desc": "{attack}攻（每加过{otherParams[1]}[体魄]就多1攻）", "sect": 4, "level": 2, "attack": 10, "hpCost": 2, "overrideSpriteIds": [10000005], "otherParams": [15, 2], "estimateTime": 1.5, "hidden": true, "noUpgrade": true, "subcategory": 14, "career": 0, "anima": 0, "randomAttack": 0, "attackCount": 0, "def": 0, "randomDef": 0, "damage": 0, "randomDamage": 0, "jianYi": 0, "guaXiang": 0, "actionAgain": false, "cardType": 0, "rarity": 0, "physique": 0, "linkageId": 0, "chargeQi": 0, "owner": 0, "seasonMechanics": [], "obsolete": false, "description_preview": "10攻（每加过2[体魄]就多1攻）"}}, {"alias": "D1941", "config": {"id": 10020079, "name": "梦•劈山掌", "desc": "{attack}攻（每加过{otherParams[1]}[体魄]就多1攻）", "sect": 4, "level": 3, "attack": 12, "hpCost": 2, "overrideSpriteIds": [10000005], "otherParams": [15, 2], "estimateTime": 1.5, "hidden": true, "noUpgrade": true, "subcategory": 14, "career": 0, "anima": 0, "randomAttack": 0, "attackCount": 0, "def": 0, "randomDef": 0, "damage": 0, "randomDamage": 0, "jianYi": 0, "guaXiang": 0, "actionAgain": false, "cardType": 0, "rarity": 0, "physique": 0, "linkageId": 0, "chargeQi": 0, "owner": 0, "seasonMechanics": [], "obsolete": false, "description_preview": "12攻（每加过2[体魄]就多1攻）"}}, {"alias": "D1942", "config": {"id": 10030079, "name": "梦•劈山掌", "desc": "每有{otherParams[0]}[体魄]就加1[气势]\\n{attack}攻（每加过{otherParams[1]}[体魄]就多1攻）", "sect": 4, "level": 4, "attack": 10, "hpCost": 2, "overrideSpriteIds": [10000005], "otherParams": [15, 2], "estimateTime": 1.5, "hidden": true, "noUpgrade": true, "subcategory": 14, "career": 0, "anima": 0, "randomAttack": 0, "attackCount": 0, "def": 0, "randomDef": 0, "damage": 0, "randomDamage": 0, "jianYi": 0, "guaXiang": 0, "actionAgain": false, "cardType": 0, "rarity": 0, "physique": 0, "linkageId": 0, "chargeQi": 0, "owner": 0, "seasonMechanics": [], "obsolete": false, "description_preview": "每有15[体魄]就加1[气势]\n10攻（每加过2[体魄]就多1攻）"}}, {"alias": "D1943", "config": {"id": 10040079, "name": "梦•劈山掌", "desc": "每有{otherParams[0]}[体魄]就加1[气势]\\n{attack}攻（每加过{otherParams[1]}[体魄]就多1攻）", "sect": 4, "level": 5, "attack": 7, "hpCost": 2, "overrideSpriteIds": [10000005], "otherParams": [15, 1], "estimateTime": 1.5, "hidden": true, "noUpgrade": true, "subcategory": 14, "career": 0, "anima": 0, "randomAttack": 0, "attackCount": 0, "def": 0, "randomDef": 0, "damage": 0, "randomDamage": 0, "jianYi": 0, "guaXiang": 0, "actionAgain": false, "cardType": 0, "rarity": 0, "physique": 0, "linkageId": 0, "chargeQi": 0, "owner": 0, "seasonMechanics": [], "obsolete": false, "description_preview": "每有15[体魄]就加1[气势]\n7攻（每加过1[体魄]就多1攻）"}}];
+export function registerPalm(swogi){
+ for(const {alias,config:c} of palmCards){
+  if(Object.hasOwn(swogi,alias)) throw Error('palm alias collision');
+  const template=swogi['601011'];
+  const flags=Object.fromEntries(Object.keys(template).filter(k=>k.startsWith('is_')).map(k=>[k,false]));
+  swogi[alias]=Object.freeze({...template,...flags,name:c.name,names:[c.name],marking:'dx',opening:undefined,qi_cost:0,hp_cost:c.hpCost,
+   card_actions:g=>{
+    const p=g.players[0], gained=p.physique_gained;
+    if(!Number.isSafeInteger(gained)||gained<0||!Number.isSafeInteger(p.physique))throw Error('unresolved palm physique');
+    const attack=c.attack+Math.trunc(gained/c.otherParams[1]);
+    const force=Math.trunc(p.physique/c.otherParams[0]);
+    if(c.level>=4 && force>0)g.increase_idx_force(0,force);
+    g.atk_replay_count_or_default(attack,Math.max(1,c.attackCount));
+   }});
+ }
+}

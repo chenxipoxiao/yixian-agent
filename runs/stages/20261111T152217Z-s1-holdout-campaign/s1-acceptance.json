@@ -1,0 +1,154 @@
+{
+  "created_at_utc": "2026-11-11T15:54:59.726482+00:00",
+  "stage": "S1",
+  "accepted": true,
+  "gates": {
+    "training_games_at_least_1000": true,
+    "validation_games_at_least_100": true,
+    "new_test_games_at_least_100": true,
+    "three_preregistered_seeds_completed": true,
+    "all_selected_validation_nll_better_than_both_baselines": true,
+    "own_prefix_predictions_legal_and_multiset_preserving": true,
+    "selection_frozen_before_one_test_campaign": true,
+    "champion_not_changed_by_test": true,
+    "selected_weights_backed_up_and_hash_verified": true
+  },
+  "frozen_split_summary": {
+    "boards": {
+      "train": 18580,
+      "validation": 2229,
+      "test": 1807
+    },
+    "games": {
+      "train": 1226,
+      "validation": 150,
+      "test": 123
+    }
+  },
+  "champion_seed": 20261122,
+  "champion_selected_step": 1800,
+  "champion_test_metrics": {
+    "games": 123,
+    "boards": 1807,
+    "informative_decisions": 10670,
+    "pooled_metrics": {
+      "model": {
+        "teacher_nll": 0.7672960770953132,
+        "teacher_next_card_accuracy": 0.6924086223055296,
+        "own_prefix_exact_board_accuracy": 0.21140011068068623,
+        "own_prefix_position_accuracy": 0.479100191448628
+      },
+      "position_frequency": {
+        "teacher_nll": 1.4231829706031005,
+        "teacher_next_card_accuracy": 0.41921274601686975,
+        "own_prefix_exact_board_accuracy": 0.05755395683453238,
+        "own_prefix_position_accuracy": 0.2616464582003829
+      },
+      "random": {
+        "teacher_nll": 1.4276295927764127,
+        "teacher_next_card_accuracy": 0.2681414290177176,
+        "own_prefix_exact_board_accuracy": 0.016690617286390676,
+        "own_prefix_position_accuracy": 0.15466637037712339
+      }
+    },
+    "game_macro_metrics": {
+      "model": {
+        "teacher_nll": 0.7612829584656462,
+        "teacher_next_card_accuracy": 0.6939192119602811,
+        "own_prefix_exact_board_accuracy": 0.22415584732196744,
+        "own_prefix_position_accuracy": 0.48369456903741825
+      },
+      "position_frequency": {
+        "teacher_nll": 1.4225415069244682,
+        "teacher_next_card_accuracy": 0.42008383885171374,
+        "own_prefix_exact_board_accuracy": 0.06477997348193151,
+        "own_prefix_position_accuracy": 0.26486846782403134
+      },
+      "random": {
+        "teacher_nll": 1.415979810651113,
+        "teacher_next_card_accuracy": 0.2712832788827891,
+        "own_prefix_exact_board_accuracy": 0.018479739399863655,
+        "own_prefix_position_accuracy": 0.15775377204535623
+      }
+    },
+    "paired_game_macro_ci95": {
+      "position_frequency": {
+        "teacher_nll": {
+          "model_minus_baseline": -0.6612585484588219,
+          "low": -0.7110476858028849,
+          "high": -0.6129508068291482
+        },
+        "teacher_next_card_accuracy": {
+          "model_minus_baseline": 0.2738353731085672,
+          "low": 0.2522497084018756,
+          "high": 0.29551005213333414
+        },
+        "own_prefix_exact_board_accuracy": {
+          "model_minus_baseline": 0.15937587384003604,
+          "low": 0.13555577858110232,
+          "high": 0.18405084496504925
+        },
+        "own_prefix_position_accuracy": {
+          "model_minus_baseline": 0.21882610121338686,
+          "low": 0.19370534432478542,
+          "high": 0.24356880617804622
+        }
+      },
+      "random": {
+        "teacher_nll": {
+          "model_minus_baseline": -0.654696852185467,
+          "low": -0.7003583336377665,
+          "high": -0.6080756315778676
+        },
+        "teacher_next_card_accuracy": {
+          "model_minus_baseline": 0.4226359330774918,
+          "low": 0.4041312233773695,
+          "high": 0.44176715535426087
+        },
+        "own_prefix_exact_board_accuracy": {
+          "model_minus_baseline": 0.20567610792210395,
+          "low": 0.17874892842127035,
+          "high": 0.23342584565385735
+        },
+        "own_prefix_position_accuracy": {
+          "model_minus_baseline": 0.32594079699206197,
+          "low": 0.30024231102387194,
+          "high": 0.3509337371725007
+        }
+      }
+    },
+    "bootstrap": {
+      "seed": 20261204,
+      "samples": 2000,
+      "resampling_unit": "whole_game",
+      "estimator": "mean_of_per_game_rates"
+    },
+    "metric_scope": "recorded_order_reproduction_not_game_win_rate",
+    "prefix_source": "own_previous_predictions_for_full_board_metrics",
+    "random_full_board_baseline": "exact_expectation_over_uniform_occurrence_permutations",
+    "illegal_predictions": 0,
+    "multiset_violations": 0,
+    "game_strength_evaluated": false,
+    "full_match_training": false,
+    "per_game_metrics_available": true
+  },
+  "test_models_evaluated": 3,
+  "test_campaigns": 1,
+  "test_games": 123,
+  "test_boards": 1807,
+  "real_game_strength_measured": false,
+  "full_match_policy_available": false,
+  "next_stage": "S2",
+  "next_stage_status": "waiting_for_rule_calibration",
+  "training_job_seconds": 339.7659602199983,
+  "final_test_job_seconds": 9.133855369998855,
+  "selection_release_metadata_fix": "Only JSON newline normalization; original training plan, model settings, runs and test protocol preserved.",
+  "evaluation_transport_recovery": "SSH return-channel timeout after remote success; recovered and hashed completed report without re-running holdout.",
+  "evidence": [
+    "D:\\弈仙牌\\runs\\campaigns\\20261111T153452Z-longyao-s1-v2\\plan.json",
+    "D:\\弈仙牌\\runs\\campaigns\\20261111T153452Z-longyao-s1-v2\\release-plan.json",
+    "D:\\弈仙牌\\runs\\campaigns\\20261111T153452Z-longyao-s1-v2\\selection.json",
+    "D:\\弈仙牌\\runs\\stages\\20261111T152217Z-s1-holdout-campaign\\final-test-report.json",
+    "D:\\弈仙牌\\runs\\stages\\20261111T152217Z-s1-holdout-campaign\\backup-verification.json"
+  ]
+}

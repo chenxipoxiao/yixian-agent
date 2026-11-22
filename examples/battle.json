@@ -1,0 +1,26 @@
+{
+  "seed": 20261111,
+  "max_turns": 64,
+  "first_player": 0,
+  "include_log": false,
+  "players": [
+    {
+      "character": "sw1",
+      "hp": 40,
+      "max_hp": 40,
+      "cultivation": 10,
+      "round_number": 1,
+      "destiny": 100,
+      "cards": ["111011", "111021", "111031", "111011", "111021", "111031", "111011", "111021"]
+    },
+    {
+      "character": "sw2",
+      "hp": 40,
+      "max_hp": 40,
+      "cultivation": 9,
+      "round_number": 1,
+      "destiny": 100,
+      "cards": ["601011", "601011", "601011", "601011", "601011", "601011", "601011", "601011"]
+    }
+  ]
+}

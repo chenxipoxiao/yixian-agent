@@ -1,0 +1,2 @@
+# CPU-only curriculum learner; no GPU or game client dependency.
+numpy>=2.3,<3

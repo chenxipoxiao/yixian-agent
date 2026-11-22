@@ -1,0 +1,1 @@
+{"id":"synthetic-schema-example","evidence":"simulator_self_check","input":{"description":"Replace with the simulator input schema; this example contains no YiXian rules."},"expected":{"schema_example":true},"observed":{"schema_example":true},"note":"This is only a JSONL format example. Never count it as evidence of agreement with the real game."}

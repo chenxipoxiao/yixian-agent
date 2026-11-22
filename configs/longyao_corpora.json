@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "current_stage": "S2",
+  "corpora": [
+    {
+      "id": "longyao-v1",
+      "directory": "runs/pretraining-data/longyao-v1",
+      "manifest_sha256": "ede801da9b7ca2adca3cb93327d08b8c3c87dfd90b0441829774cccc0e911720",
+      "split_summary": {
+        "boards": {
+          "train": 5191,
+          "test": 659,
+          "validation": 676
+        },
+        "games": {
+          "train": 349,
+          "test": 45,
+          "validation": 45
+        }
+      },
+      "test_use_status": "previously_evaluated_retired_from_new_final_test",
+      "allowed_roles_in_next_experiment": [
+        "train",
+        "validation"
+      ],
+      "original_whole_game_assignments_must_be_preserved": true
+    },
+    {
+      "id": "longyao-expansion-01",
+      "directory": "runs/pretraining-data/longyao-expansion-01",
+      "manifest_sha256": "b4c6f5f428241939c8b8366616788bf89a81cbd8f58632d5953143c9f2c09897",
+      "split_summary": {
+        "boards": {
+          "validation": 906,
+          "train": 8139,
+          "test": 1008
+        },
+        "games": {
+          "validation": 65,
+          "train": 544,
+          "test": 67
+        }
+      },
+      "test_use_status": "previously_evaluated_retired_from_new_final_test",
+      "allowed_roles_in_next_experiment": [
+        "train",
+        "validation"
+      ],
+      "original_whole_game_assignments_must_be_preserved": true,
+      "test_model_evaluations": 3,
+      "test_campaigns": 1
+    },
+    {
+      "id": "longyao-expansion-02",
+      "directory": "runs/pretraining-data/longyao-expansion-02",
+      "manifest_sha256": "3c2cf8f549aa7da92f9bfd7389963c7cbb86ea42fd6b684d4015cf14947c1235",
+      "split_summary": {
+        "boards": {
+          "train": 5250,
+          "validation": 647,
+          "test": 799
+        },
+        "games": {
+          "train": 333,
+          "validation": 40,
+          "test": 56
+        }
+      },
+      "test_use_status": "previously_evaluated_retired_from_new_final_test",
+      "allowed_roles_in_next_experiment": [
+        "train",
+        "validation"
+      ],
+      "original_whole_game_assignments_must_be_preserved": true,
+      "test_model_evaluations": 3,
+      "test_campaigns": 1
+    }
+  ],
+  "combined_training_corpus_created": true,
+  "note": "Exclusions on an individual acquisition batch prevent duplicate games; approved prior train/validation rows may be reused only in their original partitions.",
+  "next_batch": null,
+  "before_multiseed_training": "Satisfied by the frozen three-seed v2 campaign; do not repeat it or reuse its final test as independent.",
+  "acquisition_status": "S1_complete; S2 calibration starts from existing train/validation source games",
+  "frozen_training_corpus": {
+    "directory": "runs/pretraining-data/longyao-s1-frozen-v2",
+    "manifest_sha256": "6ee1dee52d2cb822bd85259cd180e456b76556ef357f446eb8bbf01f1db07de4",
+    "split_summary": {
+      "boards": {
+        "train": 18580,
+        "validation": 2229,
+        "test": 1807
+      },
+      "games": {
+        "train": 1226,
+        "validation": 150,
+        "test": 123
+      }
+    },
+    "test_use_status": "evaluated_once_for_preregistered_three_model_campaign",
+    "test_model_evaluations": 3,
+    "test_campaigns": 1,
+    "holdout_claim": "runs/evaluations/holdout-use/270fc5fc898c21d8aaa5503e25bd9d76faf31413095ecaaa6e9ae5cce5f6194c.json"
+  },
+  "multiseed_training_completed": true,
+  "S1_accepted": true
+}

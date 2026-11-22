@@ -1,0 +1,23 @@
+{
+  "schema": "combat-validation-policy-v1",
+  "source": "user_request_2026-11-13_batch_fixes_before_tests",
+  "phase": "S2",
+  "workflow": "complete_related_changes_then_one_targeted_batch_then_one_closing_full_pass",
+  "suggested_related_effects_per_batch": [3, 8],
+  "batch_size_is_not_a_quota": true,
+  "per_card_full_replay_audit": false,
+  "per_card_remote_full_audit": false,
+  "targeted_scope": "union_of_both_players_start_cards_fates_season_states_dependencies_and_fixed_controls",
+  "selection_uses_outcomes": false,
+  "control_records": 4,
+  "mandatory_full_scopes": ["shared_engine", "initialization", "scheduler", "damage", "death", "settlement", "unknown"],
+  "unknown_dependency_scope": "full",
+  "full_pass_timing": "after_batch_targeted_checks_pass; once_per_final_candidate_on_each_required_host",
+  "failed_targeted_check": "fix_the_batch_and_repeat_affected_checks_before_full_pass",
+  "source_or_context_change_after_full_pass": "new_candidate_requires_revalidation",
+  "skipped_records": "untested_this_run; never_count_cached_matches_as_fresh_tests",
+  "coverage_publication": "only_after_closing_full_pass_and_regression_review",
+  "battle_training_allowed": false,
+  "entrypoint": "tools/validate_combat_batch.py",
+  "documentation": "docs/COMBAT_VALIDATION_BATCHES_V1.md"
+}

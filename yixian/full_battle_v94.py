@@ -1,0 +1,37 @@
+"""Current Unceasing Exercising attack values over frozen v93r3."""
+import hashlib,json
+from pathlib import Path
+from . import full_battle_v93r3 as previous
+from . import full_battle_v80 as core
+from .combat_compiler_view_v81 import isolated_compiler,compiler_modules
+ROOT=Path(__file__).resolve().parents[1]
+PROOF=ROOT/'data/inspection/current-unceasing-v94.json'
+PROOF_SHA='439186e91131587b57a754069c06e58c6f28d6ab0ffd23ba6517a8dd81fec9af'
+BRIDGE=ROOT/'tools/full_battle_bridge_v94.mjs'
+UnresolvedBattle=previous.UnresolvedBattle
+def catalogue():
+    extension_contract()
+    return previous.catalogue()
+
+derive_start_initiative=previous.derive_start_initiative
+def extension_contract():
+    raw=PROOF.read_bytes()
+    if hashlib.sha256(raw).hexdigest()!=PROOF_SHA:raise UnresolvedBattle('unceasing_v94:evidence_changed')
+    facts=json.loads(raw)
+    for p,h in facts['source_sha256'].items():
+        if hashlib.sha256((ROOT/p).read_bytes()).hexdigest()!=h:raise UnresolvedBattle('unceasing_v94:source_changed:'+p)
+    return facts
+def compile_start(row,**kwargs):
+    extension_contract()
+    if 'tables' not in kwargs:kwargs['tables']=catalogue()
+    return previous.compile_start(row,**kwargs)
+def simulate_batch(battles,*,timeout=90):
+    extension_contract()
+    # Validate each versioned extension once; do not mutate ancestor globals.
+    for module in compiler_modules(previous).values():
+        contract=vars(module).get('extension_contract')
+        if contract is not None:contract()
+    result=isolated_compiler(core,runtime_bridge=BRIDGE).simulate_batch(battles,timeout=timeout)
+    result['adapter_contract']={**result['adapter_contract'],'schema':'complete-single-battle-diagnostic-v94',
+      'unceasing_evidence_sha256':PROOF_SHA,'training_label_allowed':False}
+    return result

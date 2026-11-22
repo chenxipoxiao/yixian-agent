@@ -1,0 +1,43 @@
+{
+  "name": "tactical-proposal-v3-numeric-residual-pilot",
+  "scope": "longyao_shuffled_recorded_board_reconstruction",
+  "corpus_manifest_sha256": "6ee1dee52d2cb822bd85259cd180e456b76556ef357f446eb8bbf01f1db07de4",
+  "model": {
+    "width": 256,
+    "layers": 6,
+    "heads": 8,
+    "dropout": 0.1
+  },
+  "train": {
+    "seed": 2026111201,
+    "validation_seed": 2026111202,
+    "bootstrap_seed": 2026111203,
+    "batch_size": 128,
+    "max_updates": 600,
+    "learning_rate": 0.0001,
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "validation_interval": 200,
+    "early_stopping_patience": 3,
+    "minimum_improvement": 0.0001,
+    "max_minutes": 10,
+    "evaluation_batch_size": 256,
+    "cpu_threads": 4,
+    "bootstrap_samples": 2000
+  },
+  "character_id": 1000003,
+  "full_match_training": false,
+  "evaluation_roles": [
+    "train",
+    "validation"
+  ],
+  "test_evaluation_enabled": false,
+  "selection_metric": "validation_teacher_nll",
+  "test_used_for_selection": false,
+  "model_scope": "rule_aware_recorded_order_proposal_v3",
+  "card_table": "data/local/2026-11-06/tables/CardConfig.json",
+  "card_table_sha256": "5f999faf2e59c6f46d816582354829397b84088e021eccba22360de9d69dd641",
+  "card_rule_fingerprint": "07fcdcbe1ec2521d69008bcf3a6929d0ab8a0fed571db4fb304ccce9421077f3",
+  "warm_start": "runs/campaigns/20261111T153452Z-longyao-s1-v2/exports/champion-policy.pt",
+  "warm_start_sha256": "613459a0738d8ec69c351172bd53e32ca9d9170fe3c222b8281864b0af8a9388"
+}

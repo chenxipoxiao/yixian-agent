@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "wiki": {
+    "homepage": "https://sharpobject.github.io/yxp_wiki/zh/index.html",
+    "repository": "https://github.com/sharpobject/yxp_wiki",
+    "commit": "b3d018bd3c968a82658abadba8a2472dedfd155a",
+    "cached_sources": "data/references/yxp_wiki/20261112-b3d018bd",
+    "audit": "runs/diagnostics/20261112T051500Z-wiki-reference/report.json"
+  },
+  "current_sect_pool_manifest": "runs/diagnostics/20261112T051500Z-wiki-reference/current-sect-pools.json",
+  "user_season_clarification": "data/inspection/user-season-clarification-2026-11-12.json",
+  "skip_reward_module": "yixian/season_decision_v2.py",
+  "skip_reward_flow_integrated": false,
+  "numeric_version": "001.0008.0005",
+  "newer_wiki_patch_values_applied": false,
+  "management_training_deferred": true,
+  "documentation": "docs/REFERENCE_CATALOGUE.md"
+}

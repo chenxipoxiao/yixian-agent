@@ -1,0 +1,17 @@
+.venv/
+external/
+data/local/
+data/inspection/
+runs/
+__pycache__/
+*.pyc
+node_modules/
+
+data/references/
+configs/cloud_training.json
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+.pytest_cache/

@@ -1,0 +1,25 @@
+{
+  "name": "longyao-board-reconstruction-gpu-v1",
+  "scope": "longyao_shuffled_recorded_board_reconstruction",
+  "model": {"width": 256, "layers": 6, "heads": 8, "dropout": 0.1},
+  "train": {
+    "seed": 20261111,
+    "validation_seed": 20261112,
+    "test_seed": 20261113,
+    "batch_size": 128,
+    "max_updates": 3000,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "validation_interval": 200,
+    "early_stopping_patience": 6,
+    "minimum_improvement": 0.0001,
+    "max_minutes": 30,
+    "evaluation_batch_size": 256,
+    "cpu_threads": 4
+  },
+  "character_id": 1000003,
+  "full_match_training": false,
+  "selection_metric": "validation_duplicate_aware_reconstruction_nll",
+  "test_used_for_selection": false
+}

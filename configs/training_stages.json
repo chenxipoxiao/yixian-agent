@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "target": "当前百家之道赛季的龙瑶离线完整对局策略",
+  "character_id": 1000003,
+  "updated_on": "2026-11-12",
+  "current_stage": "S2",
+  "execution_policy": {
+    "ssh_alias": "yixian-gpu",
+    "remote_project": "/home/ubuntu/yixian-agent",
+    "monitor_interval_minutes": 30,
+    "concurrent_gpu_jobs": 1,
+    "initial_max_minutes_per_training_run": 120,
+    "initial_max_gpu_job_hours_per_day": null,
+    "max_download_mib_per_acquisition": 192,
+    "max_download_mib_per_day": 1024,
+    "minimum_free_disk_gib": 10,
+    "stale_progress_minutes": 15,
+    "gpu_temperature_warning_celsius": 85,
+    "repeated_identical_failure_limit": 2,
+    "automatic_stage_promotion": "evidence_required",
+    "same_experiment_without_new_hypothesis": "do_not_repeat",
+    "checkpoint_selection": "validation_only",
+    "new_test_required_after_test_driven_tuning": true,
+    "preserve_failed_runs": true,
+    "online_client_control": false,
+    "scope": "existing_single_T4_offline_research",
+    "gpu_billing": "existing_monthly_single_T4",
+    "daily_gpu_limit_policy": "no_daily_runtime_cap_user_authorized_2026-11-12",
+    "job_duration_policy": "120-minute segments for recovery; eligible jobs may continue throughout the day"
+  },
+  "stages": [
+    {
+      "id": "S1",
+      "name": "真人回放牌序预训练",
+      "status": "completed",
+      "completed_milestone": "3个预登记种子完成训练与一次固定保留测试，S1牌序预训练门槛通过",
+      "corpus_registry": "configs/longyao_corpora.json",
+      "expanded_data_note": "1226训练局、150验证局、123保留测试局；全部测试局已用于一次预登记的3模型评测，今后不得称为未使用测试集。",
+      "frozen_corpus": "runs/pretraining-data/longyao-s1-frozen-v2",
+      "data_acquisition_required_now": false,
+      "evidence": [
+        "runs/pretraining/20261111T124838Z-longyao-v1/result-summary.json",
+        "runs/stages/20261111T145332Z-s1-evaluation-isolation/development-data-verification.json",
+        "runs/stages/20261111T152217Z-s1-holdout-campaign/s1-acceptance.json",
+        "runs/campaigns/20261111T153452Z-longyao-s1-v2/result-summary.json"
+      ],
+      "next_work": [],
+      "planning_gates": {
+        "minimum_training_games": 1000,
+        "minimum_validation_games": 100,
+        "minimum_new_test_games": 100,
+        "independent_training_seeds": 3,
+        "illegal_or_multiset_changing_predictions": 0,
+        "validation_nll_better_than_random_and_position_baselines": true,
+        "test_not_used_to_select_hyperparameters": true
+      },
+      "metric_scope": "牌序复现与生成合法性，不是游戏胜率",
+      "completion_does_not_require": "未校准战斗引擎的胜率标签",
+      "development_only_training_entrypoint": "tools/train_longyao_development.py",
+      "own_prefix_evaluation_implemented": true,
+      "final_test_release_entrypoint_available": true,
+      "multi_seed_training_started": true,
+      "multi_seed_training_completed": true,
+      "campaign_plan_sha256": "8351de636b37a7b0987028fb5052a58e87024b8b414e044ce06f94eeb3c5c79d",
+      "preregistered_training_seeds": [
+        20261121,
+        20261122,
+        20261123
+      ],
+      "final_test_completed": true,
+      "completed_at_utc": "2026-11-11T15:54:59.726482+00:00",
+      "completed_campaign": "runs/campaigns/20261111T153452Z-longyao-s1-v2/plan.json",
+      "acceptance_report": "runs\\stages\\20261111T152217Z-s1-holdout-campaign\\s1-acceptance.json"
+    },
+    {
+      "id": "S2",
+      "name": "战斗校准与有限信息摆牌",
+      "status": "waiting_for_rule_calibration",
+      "depends_on": [
+        "S1"
+      ],
+      "work": [
+        "按版本、同一整局划分核对命元与战斗终局，建立可执行卡牌及仙命清单",
+        "通用数值搜索评估候选牌序与不同对手假设，候选网络仅负责提案",
+        "先做无战斗标签的v3数值特征候选试训；校准通过再用回放经营状态与重新摆牌对手训练战术策略",
+        "优先同副职龙瑶原局、按历史公开构筑匹配，保留其他构筑对照；禁止未来信息筛选"
+      ],
+      "planning_gates": {
+        "all_admitted_content_executable": true,
+        "unexplained_deterministic_calibration_mismatches": 0,
+        "fixture_or_unresolved_battle_labels": 0,
+        "paired_comparison_against_script_and_search_baselines": true,
+        "improvement_confidence_interval_grouped_by_source_game": true,
+        "public_history_only_opponent_observations": true,
+        "simultaneous_current_boards_hidden": true,
+        "unresolved_scenarios_never_dropped": true,
+        "reactive_opponent_comparison_required": true
+      },
+      "blocked_by": [
+        "当前版本战斗尚未校准",
+        "龙瑶及仙命交互覆盖不完整"
+      ],
+      "next_work": [
+        "按最新差异队列补当前替换牌与角色专属牌；归元草10008与金穗草10009正数开局已接入，不重复研究，不外推跨轮规则",
+        "新增场景完整模拟胜者/血差/回合/命元；保留原100条输出或明确登记有源证据的修正；未知永久状态与开局终结继续阻断",
+        "按类型还原battleParams随机结果语义，同速规则未完整时保留条件核对；不搜索匹配种子",
+        "准入内容和联动补全后，冻结新的独立整局及反应式对手评测，再决定战斗奖励训练准入"
+      ],
+      "latest_calibration_audit": "runs/stages/20261112T043900Z-s2-permanent-plants/first-v4-battle-report.json",
+      "calibration_audit_status": "100_complete_development_battles_92_deterministic_four_metrics_match_not_training_admitted",
+      "latest_initialization_audit": "runs/calibration/20261111T1648-base-initialization-fixed/report.json",
+      "base_initialization_implemented": true,
+      "initialization_scope": "separate base and InitData physique boundaries; before later permanent and ordinary/seasonal opening hooks; not calibrated battle input",
+      "latest_dragon_scale_audit": "runs/calibration/20261111T1722-dragon-scale-cap-fixed/report.json",
+      "dragon_scale_implementation_scope": "automatic damage cap plus explicit raw-card post-battle flow integration; pending environment outcomes and replay-opponent board divergence stop progression; not server calibrated",
+      "dragon_scale_calibration_eligible_records": 0,
+      "latest_dragon_scale_reward_audit": "runs/calibration/20261111T1750-dragon-scale-reward/report.json",
+      "dragon_scale_reward_strict_matches": 94,
+      "dragon_scale_reward_compared_snapshots": 95,
+      "dragon_scale_reward_padding_only_difference": 1,
+      "post_battle_flow_verification": "runs/stages/20261111T181118Z-s2-post-battle-flow/verification-result.json",
+      "post_battle_flow_full_match_resume_available": false,
+      "latest_fate_acquisition_verification": "runs/stages/20261111T183710Z-s2-fate-acquisition/verification-result.json",
+      "fate_acquisition_implementation_scope": "85/86 explicit new-grant and snapshot-import ledgers; no candidate generation, automatic placement or replay-action reconstruction",
+      "latest_dragon_inheritance_verification": "runs/stages/20261112T003300Z-s2-draw-clarification/verification-result.json",
+      "dragon_inheritance_implementation_scope": "explicit first_round and4-to5 triggers,2 confirmed combined-pool draws each, overflow-exempt persistent receipts; first-round ordering unknown; no automatic flow hook",
+      "latest_permanent_initialization_audit": "runs/calibration/20261111T1952-permanent-initialization/report.json",
+      "permanent_initialization_derived_states": 1050,
+      "latest_initiative_diagnostic": "runs/calibration/20261111T2049-conditional-speed/report.json",
+      "initiative_strict_candidates_compared": 481,
+      "initiative_strict_candidate_matches": 481,
+      "initiative_ties_unresolved": 44,
+      "initiative_implementation_scope": "client display with opt-in pinned128/42 metadata; unknown parameters reject; no complete server/counterfactual certification",
+      "initiative_conditional_talent_replay_records": 1,
+      "initiative_speed_engraving_replay_records": 0,
+      "latest_death_guard_audit": "runs/calibration/20261111T2120-death-guard-boundary/report.json",
+      "death_guard_opening_states": 1050,
+      "death_guard_positive17_states": 44,
+      "death_guard_lethal_trajectories_verified": 0,
+      "death_guard_implementation_scope": "isolated17-to18 and explicit owner-turn cleanup; no full scheduler or server calibration",
+      "latest_action_boundary_verification": "runs/stages/20261111T213700Z-s2-action-boundaries/verification-result.json",
+      "action_boundary_scope": "single-actor phase ordering with required environment replies; not a card executor or full battle scheduler",
+      "action_boundary_server_rule_parity": false,
+      "latest_resurrection_verification": "runs/stages/20261111T220700Z-s2-resurrection/verification-result.json",
+      "resurrection_scope": "actor-first CanRevive and guarded430/612/341 effect handling; four other reached effects block",
+      "resurrection_server_rule_parity": false,
+      "latest_chase_verification": "runs/stages/20261111T223700Z-s2-chase/verification-result.json",
+      "chase_scope": "guarded eligibility/costs/counters; additional effects remain blocked",
+      "chase_server_rule_parity": false,
+      "latest_attack_calculation_verification": "runs/stages/20261111T230700Z-s2-attack/verification-result.json",
+      "attack_calculation_scope": "card0 CalculateAttack prefix before ApplyDamage; candidate states only",
+      "attack_calculation_server_rule_parity": false,
+      "latest_hit_verification": "runs/stages/20261111T233900Z-s2-hit/verification-result.json",
+      "hit_scope": "card0 type0 hit in complete empty effect context; candidate combat state only",
+      "hit_server_rule_parity": false,
+      "latest_card_cleanup_verification": "runs/stages/20261112T001000Z-s2-card-hooks/verification-result.json",
+      "card_cleanup_scope": "card0 OnAfterExecuted suffix after prior effects and category bookkeeping; only explicit software boundary states",
+      "card_cleanup_server_rule_parity": false,
+      "latest_round_draw_correction": "runs/stages/20261112T003300Z-s2-draw-clarification/verification-result.json",
+      "latest_card_postprocess_verification": "runs/stages/20261112T004800Z-s2-card-hooks-context/verification-result.json",
+      "card_postprocess_scope": "post-trigger classification, chain counters, charge unwinding then cleanup; earlier triggers must be resolved externally",
+      "card_postprocess_server_rule_parity": false,
+      "latest_chase_v2_verification": "runs/stages/20261112T011900Z-s2-chase-entangle/verification-result.json",
+      "chase_v2_scope": "v1 eligibility/costs/counters plus104 decrement,691 count and normal stop with explicit resonance0;277 and override unresolved",
+      "chase_v2_server_rule_parity": false,
+      "proposal_pilot": "runs/pretraining/20261112T020700Z-tactical-v3-pilot/report.json",
+      "battle_reward_training_allowed": false,
+      "calibration_source_pilot": "runs/calibration/20261111T1616-longyao-train-pilot/report.json",
+      "current_ranked_resonance": "user_confirmed_none_for_version001.0008.0005_mode3_season10",
+      "complete_battle_scope": "versioned yisim plus current client patches and explicit10006 noncombat projection;431 of525 development records remain excluded; source data used for debugging",
+      "permanent10006_handling": "preserved_in_diagnostic_metadata_not_transferred_to_live_buffs; no_current_initiative_or_persistent_update_rule"
+    },
+    {
+      "id": "S3",
+      "name": "龙瑶联合经营与路线决策",
+      "status": "not_ready",
+      "depends_on": [
+        "S2"
+      ],
+      "curriculum": [
+        "百家与副职联合候选路线；不以固定开局锁死成型阵容",
+        "过渡/成型/对策卡与留牌炼化，使用当前数值与战斗评估",
+        "道韵、仙命、升本、换牌资源的连续决策",
+        "逐步纳入其他已完整实现角色的经营，使用共享网络与角色条件"
+      ],
+      "planning_gates": {
+        "all_admitted_actions_have_legal_masks": true,
+        "randomized_resource_ledger_validation_episodes": 1000,
+        "resource_or_one_use_ledger_violations": 0,
+        "decision_budget_ladder": [
+          100000,
+          1000000
+        ],
+        "improvement_on_heldout_decisions_and_seed_groups": true
+      },
+      "blocked_by": [
+        "完整合法卡池及特殊操作未接齐",
+        "没有完整真人操作轨迹，训练轨迹必须由已验证环境产生"
+      ]
+    },
+    {
+      "id": "S4",
+      "name": "八人整局强化学习",
+      "status": "not_ready",
+      "depends_on": [
+        "S3"
+      ],
+      "work": [
+        "先验证回放经营条件下的单轮反应摆牌，再进入由环境独立维护资源的跨轮对抗",
+        "多角色、多门派八人桌：共享策略与角色条件，混合当前和历史策略，不限定八个龙瑶",
+        "所有席位独立结算命元、资源、奖励、配对、淘汰与最终名次；反事实对局不得套回未来回放状态",
+        "先小规模整局强化学习，按独立评测与角色覆盖证据逐级扩大"
+      ],
+      "planning_gates": {
+        "full_match_environment_verified": true,
+        "completed_full_lobby_verification_runs": 100,
+        "fixture_or_unresolved_training_labels": 0,
+        "illegal_actions_or_resource_resets": 0,
+        "decision_budget_ladder": [
+          100000,
+          1000000,
+          10000000
+        ],
+        "primary_reward": "最终名次",
+        "multiple_characters_and_sects": true,
+        "counterfactual_state_not_overwritten_by_future_replays": true
+      },
+      "blocked_by": [
+        "现有flow默认使用测试战果，不能用于训练",
+        "完整对局环境尚未完成"
+      ]
+    },
+    {
+      "id": "S5",
+      "name": "独立评测与迭代验收",
+      "status": "not_ready",
+      "depends_on": [
+        "S4"
+      ],
+      "work": [
+        "冻结新测试对手整局与随机种子",
+        "比较脚本、受限搜索和上一版模型",
+        "复查新时间段数据和困难阵容",
+        "准备实战观察接口"
+      ],
+      "planning_gates": {
+        "independent_training_seeds": 3,
+        "initial_evaluation_lobbies_per_checkpoint": 1000,
+        "metrics": [
+          "平均名次",
+          "前四率",
+          "吃鸡率",
+          "早期淘汰率",
+          "非法操作",
+          "不支持或截断比例",
+          "推理耗时"
+        ],
+        "clustered_confidence_intervals": true,
+        "no_server_strength_claim_from_offline_results": true
+      },
+      "completion": "保存稳定离线版本、已知缺口和下一轮改进方向；实战控制另按用户明确范围推进"
+    }
+  ],
+  "agent_architecture": "hybrid_v3_shared_tactical_search_character_conditioned_management",
+  "architecture_evidence": "docs/TACTICAL_AGENT_V3.md",
+  "restricted_battle_training_authorization_20261118": {
+    "source_event": "event-ba8f0e57bcde4a4f83c0e42c0a253642",
+    "scope": "longyao_verified_subset_battle_order_v185",
+    "permitted": true,
+    "overall_S2_gate_unchanged": true,
+    "rules": [
+      "冻结明确子集与运行源码；全局S2不晋级",
+      "严格先手、四项终局对照匹配、无记录随机参数依赖",
+      "候选反事实的全部对手面板必须完整且无随机使用，否则整条局面不产生奖励",
+      "按来源整局划分；仅训练和验证，已开发来源不能宣称独立验收",
+      "模型仅己方牌组；对手脚本只看自身牌和更早公开历史；单场结束停止",
+      "一个GPU作业；每段不超过两小时；禁止原v3重构配置重复训练"
+    ],
+    "authorized_scope_continuation": "longyao_verified_subset_battle_order_v187",
+    "latest_completed_result": "D:\\弈仙牌\\runs\\tactical\\20261118T025500Z-verified-subset-v187\\result-summary.json",
+    "original_scope_preserved": true
+  }
+}

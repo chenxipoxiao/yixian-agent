@@ -1,0 +1,136 @@
+{
+  "metrics": {
+    "observed_single": 838,
+    "n": 818,
+    "last": 407,
+    "hybrid": 410,
+    "wins": 72,
+    "losses": 69,
+    "adjacent": 527
+  },
+  "by_recording": {
+    "r-78403ca6a1257d55": {
+      "observed_single": 59,
+      "n": 59,
+      "last": 24,
+      "hybrid": 23,
+      "wins": 3,
+      "losses": 4,
+      "adjacent": 42
+    },
+    "r-0fe878374e2ddaed": {
+      "observed_single": 80,
+      "n": 79,
+      "last": 39,
+      "hybrid": 38,
+      "wins": 6,
+      "losses": 7,
+      "adjacent": 56
+    },
+    "r-48c725a003477c60": {
+      "observed_single": 96,
+      "n": 96,
+      "last": 50,
+      "hybrid": 48,
+      "wins": 8,
+      "losses": 10,
+      "adjacent": 59
+    },
+    "r-0ee3387cdaaf3128": {
+      "observed_single": 70,
+      "n": 64,
+      "last": 20,
+      "hybrid": 13,
+      "wins": 3,
+      "losses": 10,
+      "adjacent": 40
+    },
+    "r-e2e2d5b734b82891": {
+      "observed_single": 53,
+      "n": 53,
+      "last": 31,
+      "hybrid": 31,
+      "wins": 8,
+      "losses": 8,
+      "adjacent": 24
+    },
+    "r-8ebae01f494bd7bc": {
+      "observed_single": 68,
+      "n": 62,
+      "last": 41,
+      "hybrid": 38,
+      "wins": 4,
+      "losses": 7,
+      "adjacent": 41
+    },
+    "r-4db4f6ddbfb5d1f4": {
+      "observed_single": 51,
+      "n": 51,
+      "last": 28,
+      "hybrid": 24,
+      "wins": 1,
+      "losses": 5,
+      "adjacent": 38
+    },
+    "r-c5e9aaaeeb388826": {
+      "observed_single": 64,
+      "n": 64,
+      "last": 34,
+      "hybrid": 38,
+      "wins": 6,
+      "losses": 2,
+      "adjacent": 33
+    },
+    "r-a1e7b2379058e864": {
+      "observed_single": 81,
+      "n": 81,
+      "last": 31,
+      "hybrid": 37,
+      "wins": 8,
+      "losses": 2,
+      "adjacent": 60
+    },
+    "r-4ade44447f869fa9": {
+      "observed_single": 84,
+      "n": 78,
+      "last": 51,
+      "hybrid": 52,
+      "wins": 6,
+      "losses": 5,
+      "adjacent": 52
+    },
+    "r-0936cf207c98e1d8": {
+      "observed_single": 63,
+      "n": 62,
+      "last": 36,
+      "hybrid": 44,
+      "wins": 10,
+      "losses": 2,
+      "adjacent": 44
+    },
+    "r-0522dee54aa0d59a": {
+      "observed_single": 69,
+      "n": 69,
+      "last": 22,
+      "hybrid": 24,
+      "wins": 9,
+      "losses": 7,
+      "adjacent": 38
+    }
+  },
+  "roster_checks": {
+    "r-78403ca6a1257d55": "distinct",
+    "r-0fe878374e2ddaed": "distinct",
+    "r-48c725a003477c60": "distinct",
+    "r-0ee3387cdaaf3128": "distinct",
+    "r-e2e2d5b734b82891": "distinct",
+    "r-8ebae01f494bd7bc": "distinct",
+    "r-4db4f6ddbfb5d1f4": "distinct",
+    "r-c5e9aaaeeb388826": "distinct",
+    "r-a1e7b2379058e864": "distinct",
+    "r-4ade44447f869fa9": "distinct",
+    "r-0936cf207c98e1d8": "distinct",
+    "r-0522dee54aa0d59a": "distinct"
+  },
+  "scope": "Frozen recording-level comparison. Distinct eight-UID roster when available; no global game ID or repository-wide independent test asserted."
+}

@@ -1,0 +1,255 @@
+{
+  "target": "当前赛季完整对局 AI",
+  "season": "百家之道",
+  "public_season": 11,
+  "mechanism_enum": 10,
+  "local_asset_catalog": "2026.11.06.06.05.32",
+  "updated": "2026-11-11",
+  "current_server_verified": false,
+  "full_match_environment": false,
+  "official_faq_source": "data/inspection/user-faq-2026-11-11.json",
+  "latest_verification": {
+    "software_tests_passed": 255,
+    "flow_run": "runs/flow/20261111T083137Z-30a23282",
+    "flow_rounds": 18,
+    "fixture_battles": 59,
+    "training_labels": false
+  },
+  "items": [
+    {
+      "area": "卡牌与状态配置",
+      "status": "extracted_not_rule_validated",
+      "evidence": [
+        "data/local/2026-11-06/tables/"
+      ],
+      "next": "逐项核对卡牌效果、合法池与触发顺序；配置条数不是合法池大小"
+    },
+    {
+      "area": "战斗计算",
+      "status": "legacy_reference_with_audited_components",
+      "evidence": [
+        "external/yisim/research-manifest.json",
+        "tools/yisim_bridge.mjs",
+        "yixian/effect_battle.py"
+      ],
+      "limits": [
+        "未通过当前服务器校准",
+        "普通仙命×百家、Python开局×原生持续、多个不同Python开局效果之间的联动未完整实现，禁用这些组合的训练标签"
+      ],
+      "next": "以真实逐步回放校准数值、顺序和跨组件联动"
+    },
+    {
+      "area": "八张现有卡牌排序",
+      "status": "trainable_legacy_curriculum_historical_weights_need_revalidation",
+      "evidence": [
+        "yixian/environment.py",
+        "runs/20261111T063152Z-401316e3/report.json"
+      ],
+      "next": "保留历史实验；桥接/runtime契约变更后重新验证权重和评测"
+    },
+    {
+      "area": "独立牌库与换牌",
+      "status": "explicit_pool_components_implemented_complete_eligibility_missing",
+      "evidence": [
+        "data/inspection/user-faq-2026-11-11.json",
+        "yixian/card_pool.py",
+        "yixian/pool_draw.py",
+        "tests/test_card_pool.py",
+        "tests/test_draw_flow.py"
+      ],
+      "implemented": [
+        "每玩家每局独立池；常规8张/化神6张，三种指定丹各3张",
+        "抽牌扣池，获得复制与炼化不扣池",
+        "普通换牌排除同名，练笔例外",
+        "置换免额外删除，五行璞玉例外；本季门派删3、副职删2",
+        "筑基/金丹/元婴每轮首换初次不同境界时归还重抽一次，接受第二次结果",
+        "显式合法池为空时走火入魔",
+        "round_draw_provider接入声明池；两轮抽6张和库存扣减、满手后转修为已测试"
+      ],
+      "limits": [
+        "完整合法目录、境界筛选和特殊操作仍需显式提供",
+        "默认flow未提供完整合法池"
+      ],
+      "next": "扩充明确池与动作规则，逐轮回放校准；不从全卡表猜测合法抽牌分布"
+    },
+    {
+      "area": "每轮资源与持久账户",
+      "status": "faq_backed_components_and_accounting_implemented",
+      "evidence": [
+        "data/inspection/user-faq-2026-11-11.json",
+        "yixian/round_rules.py",
+        "yixian/match_flow.py",
+        "tests/test_round_rules.py",
+        "tests/test_draw_flow.py"
+      ],
+      "implemented": [
+        "基础+2修为/+2生命上限、2门派1副职抽牌",
+        "12轮起从剩余门派副职实体合并池额外抽1",
+        "本季换牌1-9轮+3、10-12轮+4、13轮起+6",
+        "手牌>12时每张未抽牌转1修为",
+        "换牌只初始化一次；修为导入调整和模拟奖励分账",
+        "体魄上限基础6、每轮+5，保命奖励持久记账"
+      ],
+      "limits": [
+        "修为通常仍来自逐轮回放；被反事实仙命修改后才转独立增长账户",
+        "original_actions_reconstructed=false；完整操作未复原"
+      ],
+      "next": "完整动作接入后继续核对账户，防止重复计入基础增长、转换与奖励"
+    },
+    {
+      "area": "仙命目录",
+      "status": "readable_heuristic_catalog_with_component_coverage",
+      "evidence": [
+        "yixian/fate_catalog.py",
+        "data/local/2026-11-06/combat-fates.json",
+        "docs/COMBAT_FATES.md"
+      ],
+      "counts": {
+        "all_config_records": 1239,
+        "combat_related_regular_records": 235,
+        "combat_related_season_records": 259
+      },
+      "limits": [
+        "包含等级、旧版和不可用变体",
+        "分类是检索索引，不是恢复的可执行规则",
+        "存在组件不代表整条效果完整实现"
+      ],
+      "next": "按目录补充证据与组件，执行覆盖读取真实运行时注册表"
+    },
+    {
+      "area": "普通仙命战斗与保命",
+      "status": "110_raw_ids_have_executable_components",
+      "evidence": [
+        "yixian/talent_adapter.py",
+        "yixian/effects.py",
+        "yixian/death_fates.py",
+        "data/inspection/death-fate-effects-audit.json"
+      ],
+      "components": {
+        "legacy_battle_ids": 104,
+        "settlement_ids": [
+          45,
+          105
+        ],
+        "death_prevention_ids": [
+          7,
+          65,
+          83,
+          154
+        ]
+      },
+      "limits": [
+        "取得奖励、持续成长和战斗组件分开看覆盖",
+        "必要计数或属性缺失时拒绝猜测",
+        "83抽牌依赖显式提供器，pending阻止下一战",
+        "多个可用保命的消耗优先级尚未确认"
+      ],
+      "next": "补齐其他效果和联动；保命后果检查不能当作完整战斗验证"
+    },
+    {
+      "area": "合成、炼化与突破",
+      "status": "full_action_environment_incomplete",
+      "evidence": [
+        "data/local/2026-11-06/tables/CardCombineConfig.json",
+        "data/local/2026-11-06/tables/LevelConfig.json",
+        "yixian/match_flow.py"
+      ],
+      "next": "用完整合法动作替换测试阶段推进，核对消耗、奖励和特殊减免"
+    },
+    {
+      "area": "百家之道候选选择",
+      "status": "external_offer_validation_only",
+      "evidence": [
+        "yixian/season.py"
+      ],
+      "next": "验证完整候选生成、共享池与首跳过流程，不代替服务器采样"
+    },
+    {
+      "area": "百家之道效果执行",
+      "status": "26_raw_ids_have_executable_components",
+      "evidence": [
+        "yixian/season_start.py",
+        "tools/season_runtime.mjs",
+        "yixian/effects.py",
+        "data/inspection/season-start-components-audit.json",
+        "data/inspection/season-runtime-il.json"
+      ],
+      "components": {
+        "battle_start_ids": 18,
+        "settlement_ids": [
+          2011
+        ],
+        "native_runtime_ids": [
+          1005,
+          1007,
+          1008,
+          1009,
+          3004,
+          3011,
+          3012
+        ]
+      },
+      "limits": [
+        "3002仅开局护体，取得奖励未接入",
+        "1010未实现，不能用普通虚弱冒充独立40个百分点修正",
+        "跨效果顺序与完整交互未通过服务器验证"
+      ],
+      "next": "补取得、主动、后续触发与交互；未支持效果明确报告并禁训练标签"
+    },
+    {
+      "area": "八人配对、命元结算、淘汰与名次",
+      "status": "fixture_match_flow_with_partial_rule_components",
+      "evidence": [
+        "runs/flow/latest.json",
+        "yixian/settlement.py",
+        "yixian/round_rules.py",
+        "tools/yisim_bridge.mjs"
+      ],
+      "implemented": [
+        "基础命元扣除和已支持修正单次结算",
+        "确认终止后双方HP严格负值时较大者胜，相等先手胜"
+      ],
+      "limits": [
+        "默认整局战果仍是fixture，不能训练",
+        "0/0与未确认终局不产生标签",
+        "镜像、配对、同轮淘汰和名次仍需核对"
+      ],
+      "next": "用实际卡牌战斗和完整合法池替换测试组件，再校准服务器配对淘汰"
+    },
+    {
+      "area": "真实对手分布",
+      "status": "small_raw_replay_sample_imported",
+      "evidence": [
+        "runs/replays/b592caa9bc6c-34499000-g8/manifest.json"
+      ],
+      "limits": [
+        "8局多视角含重复记录，记录型对手不随模拟新历史决策",
+        "用于规则诊断的保留视角降低后续独立性声明"
+      ],
+      "next": "扩大按轮次、强度、版本校准的样本，同局全部视角保持同一划分"
+    },
+    {
+      "area": "训练与评测",
+      "status": "cpu_ppo_workflow_ready_full_match_training_blocked",
+      "evidence": [
+        "yixian/pipeline.py",
+        "configs/project.json"
+      ],
+      "next": "规则、合法动作和真实回放验证完成后扩大任务；冻结新契约并重新评测，再决定算力"
+    }
+  ],
+  "bounded_pool_flow_verification": {
+    "report": "runs/diagnostics/pool-flow-20261111T083137530497Z.json",
+    "command": ".venv/Scripts/python.exe -X utf8 tools/verify_pool_flow.py",
+    "scope": "nine_card_type_declared_fixture_not_complete_legal_pool",
+    "rounds": 6,
+    "cards_drawn": 15,
+    "inventory_reduction": 15,
+    "round_6_overflow_cultivation": 3,
+    "final_cultivation": 15,
+    "all_cultivation_accounts_balanced": true,
+    "truncated": true,
+    "real_combat_results": false,
+    "policy_training_allowed": false
+  }
+}

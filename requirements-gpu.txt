@@ -1,0 +1,4 @@
+# Python 3.14; the Linux PyPI wheel includes a CUDA runtime supporting T4.
+# tools/verify_gpu.py records and tests the resolved runtime and architecture.
+-r requirements-training.txt
+torch==2.11.0

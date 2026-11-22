@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "lead": {"responsibility": "读取证据与缺口，登记实验，分配下一轮研究任务", "outputs": ["experiment_registered", "rule_decision"]},
+    "environment": {"responsibility": "实现规则，核对真实回放，修复模拟差异", "outputs": ["finding", "correction", "rule_decision"]},
+    "opponents": {"responsibility": "按整局隔离数据，校准对手状态与构筑分布", "outputs": ["finding", "correction"]},
+    "training": {"responsibility": "运行已登记实验，保存与环境契约绑定的模型", "outputs": ["experiment_status", "finding"]},
+    "evaluation": {"responsibility": "独立种子复核，检查数据污染、版本和胜负标签", "outputs": ["finding", "correction", "lesson"]},
+    "deployment": {"responsibility": "核对玩家可见输入与模型契约，归档真实反馈", "outputs": ["finding", "correction", "lesson"]}
+  },
+  "storage": "SQLite事务追加事件；纠错引用旧事件；不覆盖既有发现",
+  "claim_levels": ["hypothesis", "measured", "verified"],
+  "evidence_note": "measured和verified需要证据引用；引用本身不代表自动认证数据真实性。",
+  "execution_note": "这些是研究职责和记录约定；不是已经配置好的无人值守LLM调度服务。"
+}

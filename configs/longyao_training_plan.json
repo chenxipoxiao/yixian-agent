@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "status": "staged_execution_S1_in_progress",
+  "designed_on": "2026-11-11",
+  "target": {
+    "character": "龙瑶",
+    "raw_character_id": 1000003,
+    "sect": 1,
+    "season_mec": 10,
+    "first_milestone": "restricted-content Long Yao preparation and card-order policy",
+    "final_milestone": "complete current-season Long Yao matches, including profession and fate choices",
+    "opponents": "all supported characters, not only Long Yao"
+  },
+  "evidence": {
+    "data_audit": "runs/diagnostics/longyao-data-audit-20261111T090309Z.json",
+    "cpu_microbenchmark": "runs/benchmarks/cpu-battle-20261111T085800032804Z.json",
+    "reference_paper": "https://arxiv.org/html/2610.33845v1",
+    "paper_compute": "Reported main line: 8 H200 GPUs, 128 CPU cores; 1900 GPU-hours for 23 delivered stages, excluding other runs.",
+    "present_data": "439 whole human Long Yao games; 6526 deduplicated boards; split 349/45/45 games; first auxiliary GPU pretraining completed.",
+    "not_recoverable_from_current_replays": [
+      "stepwise replacement/refinement actions",
+      "verified pre-action profession observation",
+      "verified pre-action fate candidate observation"
+    ],
+    "present_data_at_initial_design": "Only 2 whole games with human Long Yao; 32 distinct exact-state observations, no Long Yao validation examples.",
+    "gpu_pretraining": "runs/pretraining/20261111T124838Z-longyao-v1/result-summary.json"
+  },
+  "model_proposal": {
+    "kind": "structured entity transformer with autoregressive masked action heads",
+    "estimated_parameter_range": [
+      5000000,
+      10000000
+    ],
+    "layers": 6,
+    "d_model": 256,
+    "attention_heads": 8,
+    "provisional_max_tokens": 128,
+    "inputs": [
+      "own board and hand",
+      "realm/cultivation/life/rerolls",
+      "fates and persistent counters",
+      "current legal choices",
+      "permitted opponent history and public resources"
+    ],
+    "excludes": [
+      "opponent hidden hand",
+      "future replay states",
+      "environment RNG state",
+      "unrevealed same-round opponent final arrangement"
+    ],
+    "action_heads": [
+      "action type",
+      "card or candidate pointer",
+      "target slot",
+      "finish preparation"
+    ],
+    "value_head": "expected terminal placement utility",
+    "card_features": "identity, card level, realm, cost, effect tags; optional frozen text features after ablation",
+    "exact_size_and_vram": "must be measured after implementation"
+  },
+  "data_plan": {
+    "initial_acquisition_target_whole_human_longyao_games": [
+      5000,
+      20000
+    ],
+    "target_is_planning_estimate_not_minimum_requirement": true,
+    "version_and_season_filters_required": true,
+    "duplicates": "group every perspective of the same source game; exact repeated states do not count as independent games",
+    "split": "whole-game grouped train/validation/test, with a separate newer-time holdout; diagnostic sample retired from independent final evaluation",
+    "pretraining": [
+      "shuffle an observed owned board multiset and learn demonstrated order, without claiming the original acquisition process",
+      "shared card/state representation from compatible Cloud Sword and Long Yao examples",
+      "state/battle value labels only with verified timing and player identity; final-rank labels only when identity is reliable"
+    ],
+    "excluded_labels": [
+      "invented swap/refine trajectories",
+      "post-decision cumulative candidates presented as pre-action observations"
+    ],
+    "data_shortage_fallback": "validated simulator search teachers and scripted policies generate new explicit trajectories; never fabricate human actions"
+  },
+  "curriculum": [
+    {
+      "stage": "rule_gate",
+      "device": "local_cpu",
+      "work": [
+        "Long Yao 25/27/220/221/222 and acquisition chains",
+        "Cloud Sword cards and one initial profession",
+        "seasonal fate triggers and cross-effect dispatch",
+        "complete legal preparation transitions"
+      ],
+      "gate": "all content admitted to the current curriculum must execute; full-match fixture outcomes never become RL labels"
+    },
+    {
+      "stage": "replay_pretraining",
+      "device": "cpu_debug_then_single_gpu",
+      "work": [
+        "board-order warm start",
+        "shared state encoder",
+        "optional verified value labels"
+      ],
+      "gate": "held-out game split, downstream card-combat benefit, compare with identical-budget training from scratch"
+    },
+    {
+      "stage": "local_decision_curriculum",
+      "device": "single_gpu_and_cpu_workers",
+      "work": [
+        "card ordering",
+        "pick board from own available hand",
+        "replace/refine/merge/ascend and resource planning",
+        "ordinary and seasonal choices",
+        "profession choice after initial fixed-profession curriculum"
+      ],
+      "teacher": "bounded search over legal actions against distributions of permitted opponent states; no hidden-state oracle"
+    },
+    {
+      "stage": "full_match_ppo",
+      "device": "single_gpu_and_cpu_workers",
+      "work": [
+        "one learning Long Yao seat versus seven coherent replay-library tracks",
+        "maintain simulated opponents' life and one-use ledgers",
+        "mix scripted responders and frozen prior policy checkpoints after baseline"
+      ],
+      "reward": "primarily terminal placement; any round shaping bounded and checked for objective distortion",
+      "proposed_decision_budget_ladder": [
+        100000,
+        1000000,
+        10000000,
+        30000000
+      ],
+      "budget_units": "agent action decisions, not battles or games; proposed checkpoints, not a promised strength threshold"
+    },
+    {
+      "stage": "evaluation",
+      "device": "same_frozen_engine",
+      "work": [
+        "paired initial conditions/seeds against script and search baselines",
+        "held-out whole-game opponent sources",
+        "three independent training seeds",
+        "newer-time and difficult-opponent tests"
+      ],
+      "proposed_final_lobbies_per_checkpoint": [
+        3000,
+        10000
+      ],
+      "metrics": [
+        "average placement",
+        "top-four rate",
+        "first-place rate",
+        "early elimination",
+        "illegal actions",
+        "unsupported/truncated fraction",
+        "inference cost"
+      ],
+      "statistics": "bootstrap/confidence intervals grouped by independent lobby/opponent-source clusters, not repeated perspectives"
+    }
+  ],
+  "hardware_estimates": {
+    "current_machine": "Windows preparation and validation; configured single Tesla T4 server, 8 vCPU, nominal32GiB, PyTorch CUDA auxiliary learner available; complete-match GPU PPO still pending.",
+    "minimum_experiment": "single 12–16 GB GPU with reduced batch, plus CPU simulation; estimate to validate",
+    "recommended_first_training": "single 24 GB GPU, 16–32 CPU cores, 64 GB RAM, NVMe scratch",
+    "higher_headroom": "single 32 GB GPU and 32–64 CPU cores only if measured inference/update or rollout bottlenecks justify it",
+    "multi_gpu": "not needed for the initial proposed model capacity; reconsider after end-to-end profiling",
+    "cited_memory_specs": {
+      "rtx4090": "24 GB, NVIDIA official specifications",
+      "rtx5090": "32 GB, NVIDIA official specifications"
+    },
+    "first_rental_use": "2–4 hour throughput and memory pilot after GPU learner integration, not a long reservation",
+    "duration": "no reliable full-training duration yet; estimate from target agent decisions divided by measured end-to-end decisions/second, plus independent evaluation",
+    "current_machine_at_initial_design": "CPU data/rule validation and small smoke runs; present NumPy learner has no GPU execution"
+  },
+  "implementation_before_gpu": [
+    "replace or complement NumPy-only learner with GPU-capable training",
+    "batch policy inference over independent environments",
+    "persistent battle workers, then measure 1/2/4/8 worker scaling",
+    "profile full Long Yao episodes rather than extrapolate tiny basic-card microbenchmarks",
+    "freeze content/version/model contract and holdout sources for each run"
+  ],
+  "open_decisions": [
+    "initial fixed profession chosen by verified coverage and expanded human sample, then unlock profession policy",
+    "final deployment strength target and compute budget after pilot"
+  ],
+  "execution_plan": "configs/training_stages.json"
+}

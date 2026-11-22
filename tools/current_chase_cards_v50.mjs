@@ -1,0 +1,65 @@
+// New card bodies only; frozen chase/upgrade/formation primitives are reused.
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+const digest='27b9cee9f867a653c078c45592867679b254d6d510a6936f1ec064902ed5bb08',checked=new Map(),installed=new WeakSet();
+const fail=why=>{throw new Error('chase_cards_unresolved:'+why);};
+function factsAt(root) {
+ if(checked.has(root))return checked.get(root);
+ const raw=fs.readFileSync(path.join(root,'data/inspection/current-chase-cards-v50.json'));
+ if(crypto.createHash('sha256').update(raw).digest('hex')!==digest)fail('evidence_changed');
+ const f=JSON.parse(raw);
+ for(const [p,h] of Object.entries(f.source_sha256))
+  if(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex')!==h)fail('source_changed:'+p);
+ checked.set(root,f);return f;
+}
+export function registerChaseCards(root,swogi) {
+ const f=factsAt(root);
+ for(const c of f.cards) {
+  if(Object.hasOwn(swogi,c.runtime_id))fail('alias_collision');
+  const metal=c.kind==='extreme_metal',finishing=c.kind==='extreme_finishing';
+  swogi[c.runtime_id]=Object.freeze({...swogi['601011'],name:c.config.name,names:[c.config.name],
+   marking:metal?'fe':'no_marking',qi_cost:0,hp_cost:0,opening:undefined,
+   is_continuous:metal,is_consumption:finishing,is_metal_spirit:metal,
+   is_spirit_seal_or_formation:metal,is_add_qi:c.config.anima>0,
+   card_actions:g=>{
+    const p=g.players[0];
+    if(c.kind==='extreme_overcome') {
+     const idx=p.currently_triggering_card_idx;
+     if(p.trigger_depth!==1||!Number.isInteger(idx)||idx<0||idx>=p.cards.length)fail('overcome_temporary_slot');
+     g.increase_idx_qi(0,c.config.anima);
+     g.increase_idx_def(0,c.config.def);
+     g.add_c_of_x(c.config.otherParams[0],'agility');
+     const a=swogi[p.cards[g.get_prev_idx(idx)]],b=swogi[p.cards[g.get_next_idx(idx)]];
+     if(!a||!b)fail('unknown_neighbor');
+     if(f.overcoming.pairs.some(([one,two])=>a['is_'+one+'_spirit']&&b['is_'+two+'_spirit']))
+      for(const element of f.overcoming.activation_order)
+       if(b['is_'+element+'_spirit'])g['activate_'+element+'_spirit']();
+    } else if(finishing) {
+     g.add_c_of_x(c.config.otherParams[0],'finishing_touch_stacks');
+     g.chase();g.consumption();
+    } else if(metal) {
+     g.activate_metal_spirit();
+     g.add_c_of_x(c.config.otherParams[0],'metal_spirit_formation_stacks');
+     g.chase();g.continuous();
+    } else fail('unknown_kind');
+   }});
+ }
+}
+const state=p=>Object.fromEntries(['hp','max_hp','qi','def','agility','penetrate','finishing_touch_stacks','metal_spirit_formation_stacks',
+ 'activate_metal_spirit_stacks','activate_wood_spirit_stacks','activate_water_spirit_stacks','activate_fire_spirit_stacks','activate_earth_spirit_stacks'].map(k=>[k,p[k]]));
+export function installChaseCardsObserver(root,game,swogi,order=[0,1]) {
+ if(installed.has(game))fail('already_installed');
+ if(!Array.isArray(order)||order.length!==2||new Set(order).size!==2||!order.every(i=>i===0||i===1))fail('invalid_order');
+ const byId=new Map(factsAt(root).cards.map(c=>[c.runtime_id,c]));
+ const seats=new Map(game.players.map((p,i)=>[p,order[i]])),events=[],body=game.just_do_the_card_and_nothing_else.bind(game);
+ game.just_do_the_card_and_nothing_else=function(card) {
+  const p=this.players[0],id=p.currently_triggering_card_id,c=byId.get(id);
+  if(!c)return body(card);
+  if(card!==swogi[id])fail('action_identity');
+  const e={kind:'card_body',player_index:seats.get(p),raw_id:c.raw_id,runtime_id:id,slot:p.currently_triggering_card_idx,trigger_depth:p.trigger_depth,before:state(p)};
+  events.push(e);const result=body(card);e.after=state(p);return result;
+ };
+ installed.add(game);
+ return {metadata:()=>events.length?{evidence_sha256:digest,events:structuredClone(events),recorded_action_log:false,training_label_allowed:false}:null};
+}

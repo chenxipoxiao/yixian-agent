@@ -1,0 +1,61 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+const digest='b21bb33f3bd5e2331f1f70d44290084baa71c7e4816c6f6a46f4adcca3fb9a83',cache=new Map(),installed=new WeakSet();
+const check=(ok,why)=>{if(!ok)throw new Error('dream_basics_unresolved:'+why);};
+export function dreamBasicsFacts(root){
+ if(cache.has(root))return cache.get(root);
+ const b=fs.readFileSync(path.join(root,'data/inspection/current-dream-basics-v93.json'));
+ check(crypto.createHash('sha256').update(b).digest('hex')===digest,'evidence_changed');const f=JSON.parse(b);
+ for(const [p,h] of Object.entries(f.source_sha256))check(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex')===h,'source_changed:'+p);
+ cache.set(root,f);return f;
+}
+export function registerDreamBasics(root,swogi){
+ for(const c of dreamBasicsFacts(root).cards){
+  const prior=swogi[c.runtime_id];check(prior&&typeof prior.card_actions==='function','missing_native_metadata');
+  check(prior.hp_cost===c.config.hpCost&&prior.qi_cost===0,'native_cost_changed');
+  // Preserve the pinned classification and all identity-dependent callbacks.
+  swogi[c.runtime_id]=Object.freeze({...prior,card_actions:g=>g.executeCurrentDreamBasics(c.runtime_id)});
+ }
+}
+const snap=p=>Object.fromEntries(['hp','max_hp','qi','def','physique','next_attack_deals_extra'].map(k=>[k,p[k]]));
+export function installDreamBasics(root,game,swogi,order=[0,1]){
+ check(!installed.has(game),'already_installed');check(order.length===2&&new Set(order).size===2&&order.every(i=>i===0||i===1),'invalid_order');
+ const f=dreamBasicsFacts(root),cards=new Map(f.cards.map(c=>[c.runtime_id,c])),state=new Map(game.players.map((p,i)=>[p,{index:order[i],pending707:0}])),events=[];
+ const pre=game.do_pre_crash_fist.bind(game);
+ game.do_pre_crash_fist=function(id){
+  const p=this.players[0],s=state.get(p);
+  if(s.pending707>0){
+   const n=s.pending707,e={kind:'before_card_707',player_index:s.index,runtime_id:id,trigger_depth:p.trigger_depth,amount:n,before:snap(p)};
+   // Client OnBeforeExecuted 0x51b-0x553: gain, then remove, before IsBengQuan.
+   this.increase_idx_physique(0,n);s.pending707=0;e.after=snap(p);events.push(e);
+  }
+  return pre(id);
+ };
+ const adjacent=game.check_adjacent_effects_before_card.bind(game);
+ game.check_adjacent_effects_before_card=function(idx,id){
+  const p=this.players[0],neighbors=[p.cards[this.get_prev_idx(idx)],p.cards[this.get_next_idx(idx)]];
+  const n=neighbors.filter(x=>x==='D11013').length,result=adjacent(idx,id);
+  // Native applies a boolean OR; client adds693 for each matching neighbor.
+  if(n===2)p.dream_qi_perfusion_guarantee_injured++;
+  if(n)events.push({kind:'adjacent_693',player_index:state.get(p).index,runtime_id:id,trigger_depth:p.trigger_depth,matching_neighbors:n});
+  return result;
+ };
+ game.executeCurrentDreamBasics=function(id){
+  const c=cards.get(id),p=this.players[0],s=state.get(p);check(c&&p.currently_triggering_card_id===id&&swogi[id],'card_identity');
+  const e={kind:'card_body',player_index:s.index,raw_card_id:c.raw_id,runtime_id:id,trigger_depth:p.trigger_depth,before:snap(p)};events.push(e);
+  if(c.base_id===1000067){
+   this.increase_idx_qi(0,c.config.anima);this.increase_idx_x_by_c(0,'next_attack_deals_extra',c.config.otherParams[0]);
+  }else if(c.base_id===10000083){
+   let n=0;for(const field of f.debuff_fields){check(Number.isSafeInteger(p[field]),'unknown_debuff:'+field);n+=Math.max(0,p[field]);}
+   const amount=c.config.def+n*c.config.otherParams[0];check(Number.isSafeInteger(amount)&&amount<=2147483647,'def_overflow');
+   e.debuff_layers=n;this.increase_idx_def(0,amount);
+  }else{
+   for(let i=0;i<c.config.attackCount;i++)this.atk(c.config.attack);
+   this.increase_idx_physique(0,c.config.physique);s.pending707+=c.config.physique;
+   check(Number.isSafeInteger(s.pending707)&&s.pending707<=2147483647,'pending707_overflow');
+  }
+  e.after=snap(p);e.pending707=s.pending707;
+ };
+ installed.add(game);return {metadata:()=>events.length?{evidence_sha256:digest,events:structuredClone(events),recorded_action_log:false,training_label_allowed:false}:null};
+}

@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createChaseSeason} from '../tools/current_chase_season_v126r2.mjs';
+const root=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const game=()=>({players:[{cards:['D26035'],chases:0},{cards:['D26035'],chases:0}],process_this_card_chases(){},do_plant_start_permanent_buffs(){}});
+const value=()=>({players:[[7051],[]],raw_boards:[[350],[350]]});
+let g=game(),q=createChaseSeason(root,g,{},value());
+assert.equal(q.reduceQiCost('D26035',0,3),3);
+assert.equal(q.metadata().events.length,0);
+assert.equal(q.metadata().persistent_decks_changed,false);
+g=game();g.players[1].cards[0]='601011';
+assert.throws(()=>createChaseSeason(root,g,{},value()),/raw_board_mismatch/);
+g=game();let v=value();v.raw_boards[0][0]=10350;
+assert.throws(()=>createChaseSeason(root,g,{},v),/raw_board_mismatch/);
+console.log(JSON.stringify({scenarios:3,passed:true}));
